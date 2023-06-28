@@ -1,0 +1,125 @@
+#swagger.yml
+
+
+openapi: 3.0.0
+info:
+  title: "Swagger POC for SP-2779"
+  description: "This is a POC with reference to ODA"
+  version: "MY 1.0.0"
+servers:
+  - url: "/api" #root path of your API
+
+components:
+  schemas:
+    Person:
+      type: "object"
+      required:
+        - last_name
+      properties:
+        first_name:
+          type: "string"
+        last_name:
+          type: "string"
+
+    BadRequestResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        title:
+          type: string
+        detail:
+          type: string
+
+
+
+
+
+  parameters:
+    param_last_name:
+      name: "last_name"
+      description: "last name of the person to get"
+      in: path
+      required: True
+      schema:
+        type: "string"
+
+  responses:
+    BadRequest:
+      description: Bad Request, eg validation of against OpenAPI spec failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BadRequestResponse'
+
+
+paths:
+  /people:
+    get:
+      operationId: "people.read_all"
+      tags:
+        - "People"
+      summary: "Fetches all person details"
+      responses:
+        "200":
+          description: "Successfully read people list"
+    post:
+      operationId: "people.create"
+      tags:
+        - People
+      summary: "Create a person"
+      requestBody:
+        description: "Structure of request Body for creating a person"
+        required: True
+        content:
+          application/json:
+            schema:
+              x-body-name: "person_obj"
+              $ref: "#/components/schemas/Person"
+      responses:
+        "201":
+          description: "Successfully created person"
+        "400":
+          description: "Bad Request, validation of against OpenAPI spec failed"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+  /people/{last_name}:
+    get:
+      operationId: "people.read_one"
+      tags:
+        - People2
+      summary: "Read one person"
+      parameters:
+        - $ref: "#/components/parameters/param_last_name"
+      responses:
+        "200":
+          description: "Successfully read one person"
+    put:
+      tags:
+        - People2
+      operationId: "people.update"
+      summary: "Update a person"
+      parameters:
+        - $ref: "#/components/parameters/param_last_name"
+      responses:
+        "200":
+          description: "Successfully updated person"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              x-body-name: "person"
+              $ref: "#/components/schemas/Person"
+
+    delete:
+      tags:
+        - People2
+      operationId: "people.delete"
+      summary: "Delete a program"
+      parameters:
+        - $ref: "#/components/parameters/param_last_name"
+      responses:
+        "200":
+          description: "Successfully deleted person"
